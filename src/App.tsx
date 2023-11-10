@@ -1,24 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useAppDispatch, useAppSelector } from "./redux/hooks";
+import { useState } from "react";
+import { addTodo, deleteTodo, toggleTodo } from "./redux/todoActions";
 
 function App() {
+  const [todoText, setTodoText] = useState("");
+  const todos = useAppSelector((state) => state.todos);
+  const dispatch = useAppDispatch();
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <h1>Todo App</h1>
+      <div>
+        <input
+          type="text"
+          value={todoText}
+          onChange={(e) => setTodoText(e.target.value)}
+        />
+        <button
+          onClick={() =>
+            dispatch(
+              addTodo({
+                id: Math.floor(Math.random() * 1000),
+                completed: false,
+                todo: todoText,
+              })
+            )
+          }
         >
-          Learn React
-        </a>
-      </header>
+          Add Todo
+        </button>
+      </div>
+
+      <div>
+        {todos.map((todo) => (
+          <div key={todo.id} style={{ display: "flex", flexDirection: "row" }}>
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => dispatch(toggleTodo(todo.id))}
+            />
+            <p>{todo.todo}</p>
+            <button onClick={() => dispatch(deleteTodo(todo.id))}>x</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
